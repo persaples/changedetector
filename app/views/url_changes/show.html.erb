@@ -1,0 +1,63 @@
+<p>
+  <strong>URL:</strong>
+  <%= @url_change.url %>
+</p>
+
+<p>
+  <strong>Scraped at:</strong>
+  <%= @url_change.created_at %>
+</p>
+
+<% if @previous_version %>
+  <p>
+    <strong>Previous version:</strong>
+    <%= @previous_version.created_at %>
+  </p>
+<% else %>
+  <p>This is the first version of this URL.</p>
+<% end %>
+
+<div>
+  <h1><%= @url_change.url %></h1>
+  <p>Changed <%= time_ago_in_words(@url_change.created_at) %> ago</p>
+
+  <% if @previous_version.present? %>
+    <% previous_doc = Nokogiri::HTML(@previous_version.content) %>
+    <% current_doc = Nokogiri::HTML(@url_change.content) %>
+
+    <% previous_words = previous_doc.xpath("//text()").to_a %>
+    <% current_words = current_doc.xpath("//text()").to_a %>
+
+    <% # Build an array of all words that have changed %>
+    <% changes = [] %>
+    <% previous_words.each_with_index do |word, index| %>
+      <% if word.to_s.strip != current_words[index].to_s.strip %>
+        <% changes << current_words[index] %>
+      <% end %>
+    <% end %>
+
+    <% # Highlight the changed words in yellow %>
+    <% html = current_doc.to_s %>
+    <% changes.each do |word| %>
+      <% html.gsub!(word.to_s, "<span style='background-color: yellow;'>#{word.to_s}</span>") %>
+    <% end %>
+
+    <%= html.html_safe %>
+  <% else %>
+    <p>There are no previous versions of this URL to compare.</p>
+  <% end %>
+</div>
+
+<p><%= link_to 'Back', url_changes_path %></p>
+
+<style>
+  ins {
+    background-color: yellow;
+    text-decoration: none;
+  }
+
+  del {
+    background-color: pink;
+    text-decoration: none;
+  }
+</style>

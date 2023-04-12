@@ -1,0 +1,21 @@
+<h1>Enter URL to track changes</h1>
+
+<%= form_with url: url_changes_path, method: :post, local: true do |form| %>
+  <div class="field">
+    <%= form.label :url %><br>
+    <%= form.text_field :url %>
+  </div>
+  <div class="actions">
+    <%= form.submit "Submit" %>
+  </div>
+<% end %>
+
+<h2>Tracked URLs</h2>
+<ul>
+  <% @url_changes.each do |url_change| %>
+    <li>
+      <%= link_to url_change.url, url_change_path(url_change) %>
+      <%= time_ago_in_words(url_change.created_at) %> ago
+    </li>
+  <% end %>
+</ul>

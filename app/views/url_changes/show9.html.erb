@@ -1,0 +1,46 @@
+<p>
+  <strong>URL:</strong>
+  <%= @url_change.url %>
+</p>
+
+<p>
+  <strong>Scraped at:</strong>
+  <%= @url_change.created_at %>
+</p>
+
+<% if @previous_version %>
+  <p>
+    <strong>Previous version:</strong>
+    <%= @previous_version.created_at %>
+  </p>
+<% else %>
+  <p>This is the first version of this URL.</p>
+<% end %>
+
+<div>
+  <h1><%= @url_change.url %></h1>
+  <p>Changed <%= time_ago_in_words(@url_change.created_at) %> ago</p>
+
+  <% if @previous_version.present? %>
+    <% changes = Diffy::Diff.new(@previous_version.content, @url_change.content, context: 1).to_s(:html) %>
+    <%= changes.gsub(/<\/?[^>]*>/, '').html_safe %>
+  <% else %>
+    <p>There are no previous versions of this URL to compare.</p>
+  <% end %>
+</div>
+
+<p><%= link_to 'Back', url_changes_path %></p>
+
+<style>
+  ins {
+    background-color: yellow;
+    text-decoration: none;
+  }
+
+  del {
+    background-color: pink;
+    text-decoration: none;
+  }
+</style>
+
+

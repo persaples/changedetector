@@ -1,0 +1,4 @@
+# Deleted line, highlight in red
+previous_doc.xpath("//text()[contains(.,'#{line[1..-1]}')]").each do |node|
+  node.replace("<span class='deleted'>#{node.text}</span>")
+end
